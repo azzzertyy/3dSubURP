@@ -1,26 +1,54 @@
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
-    public float moveSpeed = 5f; // Adjust the speed of movement
+    public float moveSpeed = 5f;
+    private bool isMoving = false;
+
+    private Vector2 turnValue;
 
     private Rigidbody rb;
 
-    void Start()
+    public void TurnInput(InputAction.CallbackContext context)
     {
-        rb = GetComponent<Rigidbody>(); // Get the Rigidbody component attached to the GameObject
+        if (context.performed)
+        {
+            isMoving = true;
+            turnValue = context.ReadValue<Vector2>();
+            Debug.Log("Turn Input: " + turnValue);
+        }
+        else if (context.canceled)
+        {
+            isMoving = false;
+            turnValue = Vector2.zero;
+        }
     }
 
-    void Update()
+    private void FixedUpdate()
     {
-        // Read input from W, A, S, D keys
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
+        PerformMovement();
+    }
 
-        // Calculate movement direction based on input
-        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+    private void PerformMovement()
+    {
+        if(IsOwner && isMoving)
+        {
+            if(NetworkManager.Singleton.IsServer)
+            {
+                Debug.Log("perform server movement");
+            }
+            else
+            {
+                RequestMovementServerRpc(turnValue);
+            }
+        }
+    }
 
-        // Apply movement to the Rigidbody
-        rb.velocity = movement * moveSpeed;
+    [ServerRpc]
+    void RequestMovementServerRpc(Vector2 movementVector)
+    {
+        Debug.Log("Server recieved movement request: " + movementVector);
     }
 }
