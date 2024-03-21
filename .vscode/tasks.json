@@ -1,0 +1,59 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Server",
+            "type": "shell",
+            "command": "/mnt/Folders/projects/3dSubURP/Buildlin/Build.x86_64",
+            "args": [
+                "-mode",
+                "server",
+                "-logfile",
+                "log-server.txt"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Run Server and Client",
+            "type": "shell",
+            "command": "/mnt/Folders/projects/3dSubURP/Buildlin/Build.x86_64",
+            "args": [
+                "-mode",
+                "server",
+                "-logfile",
+                "log-server.txt",
+                "&",
+                "/mnt/Folders/projects/3dSubURP/Buildlin/Build.x86_64",
+                "-mode",
+                "client",
+                "-logfile",
+                "log-client.txt"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Run Client",
+            "type": "shell",
+            "command": "/mnt/Folders/projects/3dSubURP/Buildlin/Build.x86_64",
+            "args": [
+                "-mode",
+                "client",
+                "-logfile",
+                "log-client.txt"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
