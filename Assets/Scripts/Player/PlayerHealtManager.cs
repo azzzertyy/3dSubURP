@@ -5,15 +5,17 @@ using UnityEngine;
 public class PlayerHealthManager : MonoBehaviour
 {
     [SerializeField] private StatManager statManager;
-    [SerializeField] private float maxSafeSpeed;
+    //[SerializeField] private float maxSafeSpeed;
     private CharacterController characterController;
-    private List<Collider> collidersInsideTrigger = new List<Collider>();
+    //private List<Collider> collidersInsideTrigger = new List<Collider>();
 
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
     }
 
+
+    /* Disabled for now
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log("Player entered trigger");
@@ -67,4 +69,5 @@ public class PlayerHealthManager : MonoBehaviour
     {
         return (currentVelocity - otherVelocity).magnitude;
     }
+    */
 }

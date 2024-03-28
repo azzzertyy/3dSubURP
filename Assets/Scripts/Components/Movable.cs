@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireTrigger]
 public class Movable : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)

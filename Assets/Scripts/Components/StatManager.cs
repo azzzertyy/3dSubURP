@@ -1,80 +1,94 @@
 using UnityEngine;
+using System.Collections.Generic;
 
+[System.Serializable]
+public class StatData
+{
+    public string statName;
+    public float maxValue;
+}
 
-//Not networked, if something is weird it may need to be, for now it's probably fine.
 public class StatManager : MonoBehaviour
 {
-
-    [SerializeField] private float maxHealth;
-    [SerializeField] private float maxStamina;
-
-    private float currentHealth;
-    private float currentStamina;
+    [SerializeField] private List<StatData> statDataList = new();
+    private readonly Dictionary<string, float> statValues = new();
 
     private void Awake()
     {
-        currentHealth = maxHealth;
-        currentStamina = maxStamina;
+        InitializeStats();
     }
 
-    public void ModifyStat(string stat, float amount)
+    private void InitializeStats()
     {
-        Debug.Log("Modifying " + stat + " by " + amount);
-        switch (stat)
+        foreach (var data in statDataList)
         {
-            case "Health":
-                currentHealth += amount;
-                if (currentHealth > maxHealth)
-                {
-                    currentHealth = maxHealth;
-                }
-                break;
-            case "Stamina":
-                currentStamina += amount;
-                if (currentStamina > maxStamina)
-                {
-                    currentStamina = maxStamina;
-                }
-                break;
-            default:
-                break;
+            statValues[data.statName] = data.maxValue;
         }
     }
 
-    public void SetStat(string stat, float amount)
+    public void ModifyStat(string statName, float amount)
     {
-
-        switch (stat)
+        if (statValues.ContainsKey(statName))
         {
-            case "Health":
-                currentHealth = amount;
-                if (currentHealth > maxHealth)
-                {
-                    currentHealth = maxHealth;
-                }
-                break;
-            case "Stamina":
-                currentStamina = amount;
-                if (currentStamina > maxStamina)
-                {
-                    currentStamina = maxStamina;
-                }
-                break;
-            default:
-                break;
+            statValues[statName] += amount;
+            ClampStat(statName);
+        }
+        else
+        {
+            LogStat(statName);
         }
     }
-    public float GetStat(string stat)
+
+    public void SetStat(string statName, float value)
     {
-        switch (stat)
+        if (statValues.ContainsKey(statName))
         {
-            case "health":
-                return currentHealth;
-            case "stamina":
-                return currentStamina;
-            default:
-                break;
+            statValues[statName] = value;
+            ClampStat(statName);
         }
+        else
+        {
+            LogStat(statName);
+        }
+    }
+
+    public float GetStat(string statName)
+    {
+        if (statValues.ContainsKey(statName))
+        {
+            return statValues[statName];
+        }
+        else
+        {
+            LogStat(statName);
+            return 0;
+        }
+    }
+
+    public float GetMaxStat(string statName)
+    {
+        foreach (var data in statDataList)
+        {
+            if (data.statName == statName)
+            {
+                return data.maxValue;
+            }
+        }
+        LogStat(statName);
         return 0;
+    }
+
+    private void ClampStat(string statName)
+    {
+        if (statValues.ContainsKey(statName))
+        {
+            float maxValue = GetMaxStat(statName);
+            statValues[statName] = Mathf.Clamp(statValues[statName], 0f, maxValue);
+        }
+    }
+
+    private void LogStat(string statName)
+    {
+        Debug.LogWarning("Stat with name " + statName + " does not exist.");
     }
 }

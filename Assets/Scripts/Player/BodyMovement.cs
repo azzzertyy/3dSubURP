@@ -20,6 +20,7 @@ public class BodyMovement : NetworkBehaviour
     [Header("Head Rotation")]
     [Tooltip("Maximum rotation allowed for the head before the body starts to rotate.")]
     [SerializeField] private float maxHeadRotation;
+    [SerializeField] private float bodySmoothness;
 
     // Variables to store rotation values
     private float xRotation;
@@ -65,10 +66,12 @@ public class BodyMovement : NetworkBehaviour
     private void HandleBodyRotation()
     {
         float angleY = Mathf.Abs(body.rotation.eulerAngles.y - camera.rotation.eulerAngles.y);
+        float smoothnessFactor = CalculateSmoothness(angleY);
 
         if (angleY > maxHeadRotation)
         {
-            Quaternion newBodyRotation = Quaternion.Euler(body.rotation.eulerAngles.x, camera.rotation.eulerAngles.y, body.rotation.eulerAngles.z);
+            Quaternion targetRotation = Quaternion.Euler(body.rotation.eulerAngles.x, camera.rotation.eulerAngles.y, body.rotation.eulerAngles.z);
+            Quaternion newBodyRotation = Quaternion.RotateTowards(body.rotation, targetRotation, Time.deltaTime * smoothnessFactor);
             UpdateBodyRotationServerRpc(newBodyRotation);
         }
         else if (playerController.networkPlayerState.Value == PlayerController.PlayerState.Walk)
@@ -78,6 +81,13 @@ public class BodyMovement : NetworkBehaviour
         }
     }
 
+    private float CalculateSmoothness(float angleY)
+    {        
+        float smoothnessMultiplier = 1f + (angleY / 60f);
+        float scaledSmoothness = bodySmoothness * smoothnessMultiplier;
+
+        return scaledSmoothness;
+    }
 
     private void HandleHeadRotation()
     {

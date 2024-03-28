@@ -1,7 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Playables;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -14,8 +13,8 @@ public class PlayerController : NetworkBehaviour
     public NetworkVariable<PlayerState> networkPlayerState = new NetworkVariable<PlayerState>(PlayerState.Idle);
 
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float gravity = 9.81f; // Adjust as needed
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float gravity;
 
     [Header("References")]
     [SerializeField] private Camera playerCamera;
@@ -27,10 +26,6 @@ public class PlayerController : NetworkBehaviour
     private PlayerState previousState = PlayerState.Idle;
     private Vector2 movementValue;
 
-    //Rigidbody of the parent for calculating movement
-    private Rigidbody parentRigidbody;
-    private bool parentIsSub;
-
     public override void OnNetworkSpawn()
     {
         inputSystem.enabled = IsOwner;
@@ -40,14 +35,7 @@ public class PlayerController : NetworkBehaviour
 
     public void MovementInput(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Started)
-        {
-            movementValue = context.ReadValue<Vector2>();
-        }
-        else if (context.phase == InputActionPhase.Canceled)
-        {
-            movementValue = Vector2.zero;
-        }
+        movementValue = context.ReadValue<Vector2>();
     }
 
     private void Update()
@@ -62,7 +50,6 @@ public class PlayerController : NetworkBehaviour
 
     private void HandleState()
     {
-        // Update player state only when it changes
         if (networkPlayerState.Value != PlayerState.Walk && movementValue.magnitude > 0)
         {
             UpdatePlayerStateServerRpc(PlayerState.Walk);
