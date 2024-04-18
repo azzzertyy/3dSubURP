@@ -1,6 +1,5 @@
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Playables;
+using Unity.Netcode;
 
 public class BodyMovement : NetworkBehaviour
 {
@@ -11,7 +10,6 @@ public class BodyMovement : NetworkBehaviour
     public float sensY;
 
     [Header("References")]
-    [SerializeField] private Transform orientation;
     [SerializeField] private Transform camera;
     [SerializeField] private Transform head;
     [SerializeField] private Transform body;
@@ -26,9 +24,11 @@ public class BodyMovement : NetworkBehaviour
     private float xRotation;
     private float yRotation;
 
+    private bool isPiloting = false;
+
     // Network variables to synchronize head and body rotation across clients
-    private NetworkVariable<Quaternion> headRotation = new();
-    private NetworkVariable<Quaternion> bodyRotation = new();
+    private NetworkVariable<Quaternion> headRotation = new NetworkVariable<Quaternion>();
+    private NetworkVariable<Quaternion> bodyRotation = new NetworkVariable<Quaternion>();
 
     private void Awake()
     {
@@ -38,7 +38,11 @@ public class BodyMovement : NetworkBehaviour
 
     private void LateUpdate()
     {
-        if(IsClient && IsOwner)
+        if (isPiloting)
+        {
+            return;
+        }
+        if (IsClient && IsOwner)
         {
             HandleCameraRotation();
             HandleHeadRotation();
@@ -60,7 +64,6 @@ public class BodyMovement : NetworkBehaviour
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
         camera.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
-        orientation.rotation = Quaternion.Euler(0, yRotation, 0);
     }
 
     private void HandleBodyRotation()
@@ -82,7 +85,7 @@ public class BodyMovement : NetworkBehaviour
     }
 
     private float CalculateSmoothness(float angleY)
-    {        
+    {
         float smoothnessMultiplier = 1f + (angleY / 60f);
         float scaledSmoothness = bodySmoothness * smoothnessMultiplier;
 
@@ -91,8 +94,7 @@ public class BodyMovement : NetworkBehaviour
 
     private void HandleHeadRotation()
     {
-        Quaternion cameraRotation = camera.rotation;
-        UpdateHeadRotationServerRpc(cameraRotation);
+        UpdateHeadRotationServerRpc(camera.rotation);
     }
 
     [ServerRpc]
@@ -100,9 +102,24 @@ public class BodyMovement : NetworkBehaviour
     {
         headRotation.Value = newRotation;
     }
+
     [ServerRpc]
     private void UpdateBodyRotationServerRpc(Quaternion newRotation)
     {
         bodyRotation.Value = newRotation;
+    }
+
+    public void BeginPiloting(Quaternion _lookAt)
+    {
+        isPiloting = true;
+
+        UpdateBodyRotationServerRpc(_lookAt);
+        UpdateHeadRotationServerRpc(_lookAt);
+
+    }
+
+    public void EndPiloting()
+    {
+        isPiloting = false;
     }
 }

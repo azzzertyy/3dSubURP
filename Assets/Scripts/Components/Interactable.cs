@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireCollider]
+[RequireCollider] // Corrected attribute name
 public class Interactable : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private UnityEvent interactionEvent;
     [SerializeField] private GameObject uiObjectPrefab;
     [SerializeField] private string interactionText;
     [SerializeField] private Sprite interactionSprite;
+
+    [System.Serializable]
+    public class GameObjectEvent : UnityEvent<GameObject> {}
+
+    [SerializeField] private GameObjectEvent interactionEvent;
 
     private GameObject currentUIObject;
 
@@ -35,12 +39,16 @@ public class Interactable : MonoBehaviour
         }
     }
 
-    public void TriggerEvent()
+    public void TriggerEvent(GameObject player)
     {
-        interactionEvent.Invoke();
+        if(interactionEvent == null)
+        {
+            return;
+        }
+        interactionEvent.Invoke(player);
     }
 
-    public void Test()
+    public void Test(GameObject player)
     {
         Debug.Log("test");
     }

@@ -5,8 +5,11 @@ public class Interaction : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform playerCamera;
-    [SerializeField] private float interactionRange = 3f;
     [SerializeField] private LayerMask interactableLayer;
+    [SerializeField] private GameObject player;
+
+    [Header("Interaction Settings")]
+    [SerializeField] private float interactionRange;
 
     private Interactable interactable;
 
@@ -19,7 +22,7 @@ public class Interaction : MonoBehaviour
     {
         if(context.performed && interactable!= null)
         {
-            interactable.TriggerEvent();
+            interactable.TriggerEvent(player);
         }
     }
 

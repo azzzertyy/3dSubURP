@@ -1,21 +1,34 @@
+using Unity.Netcode;
 using UnityEngine;
 
 [RequireTrigger]
-public class Movable : MonoBehaviour
+public class Movable : NetworkBehaviour
 {
+    public NetworkVariable<Vector3> objectVelocity;
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (IsServer && other.CompareTag("Player"))
         {
-            other.transform.parent = transform;
+            NetworkObject networkObject = other.GetComponent<NetworkObject>();
+            if (networkObject != null)
+            {
+                // Reparent the player object on the server
+                networkObject.TrySetParent(transform);
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (!IsServer) return; 
+        if(other.CompareTag("Player"))
         {
-            other.transform.parent = null;
+            NetworkObject networkObject = other.GetComponent<NetworkObject>();
+            if (networkObject != null)
+            {
+                // Unparent the player object on the server
+                networkObject.TryRemoveParent();
+            }
         }
     }
 }
