@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireCollider] // Corrected attribute name
+[RequireCollider]
 public class Interactable : MonoBehaviour
 {
     [Header("References")]
@@ -20,6 +20,7 @@ public class Interactable : MonoBehaviour
 
     public void ShowUI(Transform playerTransform)
     {
+        Debug.Log("Showing UI");
         if (uiObjectPrefab != null && currentUIObject == null)
         {
             currentUIObject = Instantiate(uiObjectPrefab, transform);

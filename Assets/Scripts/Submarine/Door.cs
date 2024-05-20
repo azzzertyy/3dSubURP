@@ -6,6 +6,6 @@ public class Door : MonoBehaviour
     
     public void DoorInteraction(GameObject player)
     {
-        player.GetComponent<PlayerController>().DoorTeleporation(exitPosition)s;
+        player.GetComponent<PlayerController>().DoorTeleporation(exitPosition);
     }
 }

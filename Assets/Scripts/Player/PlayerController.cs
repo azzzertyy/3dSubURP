@@ -126,7 +126,7 @@ public class PlayerController : NetworkBehaviour
             moveDirection.y -= gravity * Time.deltaTime;
         }
 
-        Move(moveDirection); // Always move locally
+        Move(moveDirection);
 
         if (IsOwner)
         {
@@ -161,7 +161,7 @@ public class PlayerController : NetworkBehaviour
         }
         isJumping = false;
         Vector3 jumpVector = Vector3.up * jumpForce;
-        Jump(jumpVector); // Always jump locally
+        Jump(jumpVector);
         if (IsOwner)
         {
             JumpClientRpc(jumpVector);

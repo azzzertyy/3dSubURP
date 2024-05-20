@@ -491,8 +491,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  gravity: 100
-  jumpForce: 500
+  gravity: 10
+  jumpForce: 100
   ballastFillRate: 10
   accelerationSpeed: 10
   frictionAmount: 5
@@ -503,7 +503,6 @@ MonoBehaviour:
   bodyMovement: {fileID: 309395878228202539}
   networkPlayerState:
     m_InternalValue: 0
-  rotationSpeed: 3
 --- !u!114 &309395878228202539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -602,6 +601,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   player: {fileID: 4719604813419093685}
+  controller: {fileID: 5887248125546781959}
   interactionRange: 3
 --- !u!114 &7215562582110968555
 MonoBehaviour:
@@ -680,7 +680,7 @@ PrefabInstance:
     - target: {fileID: 7498301830394327437, guid: 7088a83b6b9921b55b283f5e38be0342,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8737874032909411773, guid: 7088a83b6b9921b55b283f5e38be0342,
         type: 3}

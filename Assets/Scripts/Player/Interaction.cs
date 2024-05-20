@@ -7,7 +7,7 @@ public class Interaction : MonoBehaviour
     [SerializeField] private Transform playerCamera;
     [SerializeField] private LayerMask interactableLayer;
     [SerializeField] private GameObject player;
-
+    [SerializeField] private PlayerController controller;
     [Header("Interaction Settings")]
     [SerializeField] private float interactionRange;
 
